@@ -4,6 +4,7 @@ const Discord = require("discord.js");
 const cron = require("cron");
 const client = new Discord.Client();
 
+//.json with token for discord bot
 const {
     token,
 } = require("./token.json");
@@ -18,36 +19,35 @@ client.on("ready", () => {
 
 class setAnnounces {
     constructor() {
-        this.announces = [];
+        this.classList = [];
     }
     newCron(timeInfo,identify,passRepeat) {
-        announceChannel.send("Identfy"+identify);
         let a = new cron.CronJob(timeInfo,() => testTime(identify,passRepeat));
-        this.announces.push(a);
+        this.classList.push(a);
         //return a;
     }
     get returnAll() {
-        return this.announces;
+        return this.classList;
     }
     /*get announceNum() {
-        return this.announces.length;
+        return this.classList.length;
     }*/
 }
 
 function testTime(passIndentify, passRepeatType) {
     announceChannel.send("passIndentify"+passIndentify);
     let index = announceList.indexOf(passIndentify);
-    let messageOut = announceContent[index];
+    let messageOut = contentList[index];
     try {
         announceChannel.send(messageOut);
     } catch {
         message.channel.send(messageOut);
     }
     if(passRepeatType == "once") {
-        allAnnounces.announces[index].stop();
-        allAnnounces.announces[index].stop();
+        allAnnounces.classList[index].stop();
+        allAnnounces.classList[index].stop();
         announceList.splice(index);
-        announceContent.splice(index);
+        contentList.splice(index);
     }
 }
 
@@ -56,7 +56,8 @@ var announceChannel;
 var dayOfWeek;
 var prefix = "?";
 const announceList = [];
-const announceContent = [];
+const contentList = [];
+const timeList = []
 
 client.on("message", message => {
 
@@ -97,14 +98,15 @@ client.on("message", message => {
             dayOfWeek = commander[2];
         }
         let confirmMessage = "Announcement '"+announceName+"' set at " + commander[3] + ":" + commander[4] + ":" + commander[5];
-        let passAnnounce = commander[5] + " " + commander[4] + " " + commander[3] + " * * " + dayOfWeek;
+        let passTime = commander[5] + " " + commander[4] + " " + commander[3] + " * * " + dayOfWeek;
+        timeList.push([commander[2],commander[5],commander[4],commander[3]]);
         for(let i = 0; i < 6; ++i) {
             commander.shift();
         }
         let stringCommander = commander.join();
-        announceContent.push(stringCommander);
+        contentList.push(stringCommander);
         announceList.push(announceName);
-        allAnnounces.newCron(passAnnounce,announceName,repeatType);
+        allAnnounces.newCron(passTime,announceName,repeatType);
         allAnnounces.returnAll[announceList.length-1].start();
         message.channel.send(confirmMessage);
         //} catch {
@@ -112,13 +114,13 @@ client.on("message", message => {
         //}
     }
 
-    //CHANNEL SETTERS
+    //Sets announcement channel
 	else if (command[0] == "set") {
         announceChannel = client.channels.cache.get(message.channel.id);
         announceChannel.send("Announcements Channel set!");
 	}
 
-    //DATE
+    //Sends date
     else if (command[0] == "date") {
         message.channel.send(Date());
     }
@@ -136,10 +138,22 @@ client.on("message", message => {
             break testAnnounce;
         }
         let listString = "";
-        for(let x of announceList) {
+        for(let i = 0; i < announceList.length; ++i) {
+            x = announceList[i];
             listString += x + " ";
         }
-        message.channel.send(listString.trim());
+        
+        message.channel.send(listString.trim() + "\nNote: To view the content and times of announcements, you need to use "+prefix+"view <announcement_name>");
+    }
+
+    //Shows set time and content of an announcement
+    else if (command[0] == "view") {
+        if(!announceList.includes(command[1])) {
+            message.channel.send("There is no announcement with that name")
+        } else {
+            let index = announceList.indexOf(command[1]);
+            message.channel.send("Type: " + timeList[index][0] + "\nTime: " + timeList[index][1] + ":" + timeList[index][2] + ":" + timeList[index][3] + "\nContent: " + contentList[index]);
+        }
     }
 
     //About
@@ -153,7 +167,7 @@ client.on("message", message => {
         });
     }
 
-    //HELP
+    //Help
     else if (command[0] == "help") {
         if (command[1] == undefined) {
             message.channel.send({
@@ -169,19 +183,18 @@ client.on("message", message => {
             message.channel.send("Sends the current date");
         } else if (command[1] == "ann") {
             if (command[2] == "once") {
-                message.channel.send("Sets an announcement that only runs once to the announcements channel at a certain time\n${prefix}ann <announcement_name> once <hour(24)> <minuite> <second> <multi-word_message>\ne.g. ${prefix}ann firstAnnouncement once 18 22 00 hello everyone\nThis will print an announcement that says 'hello everyone' at the next 18:22:00");
+                message.channel.send("Sets an announcement that only runs once to the announcements channel at a certain time\n"+prefix+"ann <announcement_name> once <hour(24)> <minuite> <second> <multi-word_message>\ne.g. "+prefix+"ann firstAnnouncement once 18 22 00 hello everyone\nThis will print an announcement that says 'hello everyone' at the next 18:22:00");
             } else if (command[2] == "daily") {
-                message.channel.send("Sets a daily announcement to the announcements channel at a certain time\n${prefix}ann <announcement_name> once <hour(24)> <minuite> <second> <multi-word_message>\ne.g. ${prefix}ann firstAnnouncement once 18 22 00 hello everyone\nThis will print an announcement that says 'hello everyone' every day at 18:22:00");
+                message.channel.send("Sets a daily announcement to the announcements channel at a certain time\n"+prefix+"ann <announcement_name> once <hour(24)> <minuite> <second> <multi-word_message>\ne.g. "+prefix+"ann firstAnnouncement once 18 22 00 hello everyone\nThis will print an announcement that says 'hello everyone' every day at 18:22:00");
             } else if (command[2] == "weekly") {
-                message.channel.send("Sets a weekly announcement to the announcements channel at the set time e.g. ${prefix}ann announceName daynumber (Monday 1, Tuesday 2, ... Sunday 7) hour minuite second message, EX. ${prefix}announce name 6 18 22 00 hello\nThis will print an announcement every Saturday set at 18 22 00 that says hello");
-            //} else if (command[2] == "specific_once") {
-                //message.channel.send("Sets an announcement that only runs once at a certain day and time of a year, either once of ")
-            //}
+                message.channel.send("Sets a weekly announcement to the announcements channel at the set time e.g. "+prefix+"ann announceName daynumber (Monday 1, Tuesday 2, ... Sunday 7) hour minuite second message, EX. "+prefix+"announce name 6 18 22 00 hello\nThis will print an announcement every Saturday set at 18 22 00 that says hello");
+            } else if (command[2] == "specific_once") {
+                message.channel.send("Sets an announcement that only runs once at a certain day and time of a year, either once of ")
             } else {
                 message.channel.send("Specify repeat type, once, daily, weekly? e.g. help ann <repeat_type>");
             }
         } else if (command[1] == "prefix") {
-            message.channel.send("Changes prefix\n${prefix}prefix <new_prefix>\ne.g. ${prefix}prefix !");
+            message.channel.send("Changes prefix\n"+prefix+"prefix <new_prefix>\ne.g. "+prefix+"prefix !");
         } else if (command[1] == "list") {
             message.channel.send("Lists all set announcements");
         } else {
@@ -190,4 +203,5 @@ client.on("message", message => {
     }
 });
 
+//Using token from .json
 client.login(token);
