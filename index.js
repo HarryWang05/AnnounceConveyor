@@ -48,6 +48,7 @@ function testTime(passIndentify, passRepeatType) {
         allAnnounces.classList[index].stop();
         announceList.splice(index);
         contentList.splice(index);
+        timeList.splice(index);
     }
 }
 
