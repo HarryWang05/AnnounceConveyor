@@ -1,7 +1,6 @@
-const fs = require("fs");
-
 const Discord = require("discord.js");
 const cron = require("cron");
+//const moment = require('moment-timezone');
 const client = new Discord.Client();
 
 //.json with token for discord bot
@@ -35,7 +34,6 @@ class setAnnounces {
 }
 
 function testTime(passIndentify, passRepeatType) {
-    announceChannel.send("passIndentify"+passIndentify);
     let index = announceList.indexOf(passIndentify);
     let messageOut = contentList[index];
     try {
