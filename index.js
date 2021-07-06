@@ -42,12 +42,16 @@ function testTime(passIndentify, passRepeatType) {
         message.channel.send(messageOut);
     }
     if(passRepeatType == "once") {
-        allAnnounces.classList[index].stop();
-        allAnnounces.classList[index].stop();
-        announceList.splice(index);
-        contentList.splice(index);
-        timeList.splice(index);
+        delAnnounce(index);
     }
+}
+
+function delAnnounce(passIndex) {
+    allAnnounces.classList[passIndex].stop();
+    allAnnounces.classList[passIndex].stop();
+    announceList.splice(passIndex);
+    contentList.splice(passIndex);
+    timeList.splice(passIndex);
 }
 
 let allAnnounces = new setAnnounces();
@@ -56,7 +60,7 @@ var dayOfWeek;
 var prefix = "?";
 const announceList = [];
 const contentList = [];
-const timeList = []
+const timeList = [];
 
 client.on("message", message => {
 
@@ -91,26 +95,26 @@ client.on("message", message => {
             message.channel.send("Announcement name is already taken!");
             break testAnnounce;
         }
-        //try {
-        dayOfWeek = "*";
-        if (!(commander[2] == "once" || commander[2] == "daily")) {
-            dayOfWeek = commander[2];
+        try {
+            dayOfWeek = "*";
+            if (!(commander[2] == "once" || commander[2] == "daily")) {
+                dayOfWeek = commander[2];
+            }
+            let confirmMessage = "Announcement '"+announceName+"' set at " + commander[3] + ":" + commander[4] + ":" + commander[5];
+            let passTime = commander[5] + " " + commander[4] + " " + commander[3] + " * * " + dayOfWeek;
+            allAnnounces.newCron(passTime,announceName,repeatType);
+            timeList.push([commander[2],commander[5],commander[4],commander[3]]);
+            for(let i = 0; i < 6; ++i) {
+                commander.shift();
+            }
+            let stringCommander = commander.join();
+            contentList.push(stringCommander);
+            announceList.push(announceName);
+            allAnnounces.returnAll[announceList.length-1].start();
+            message.channel.send(confirmMessage);
+        } catch {
+            message.channel.send("Something went wrong, this might be because you formatted the 'ann' command incorrectly");
         }
-        let confirmMessage = "Announcement '"+announceName+"' set at " + commander[3] + ":" + commander[4] + ":" + commander[5];
-        let passTime = commander[5] + " " + commander[4] + " " + commander[3] + " * * " + dayOfWeek;
-        timeList.push([commander[2],commander[5],commander[4],commander[3]]);
-        for(let i = 0; i < 6; ++i) {
-            commander.shift();
-        }
-        let stringCommander = commander.join();
-        contentList.push(stringCommander);
-        announceList.push(announceName);
-        allAnnounces.newCron(passTime,announceName,repeatType);
-        allAnnounces.returnAll[announceList.length-1].start();
-        message.channel.send(confirmMessage);
-        //} catch {
-            //message.channel.send("Something went wrong. This might be because you formatted the 'ann' command incorrectly.")
-        //}
     }
 
     //Sets announcement channel
@@ -126,14 +130,15 @@ client.on("message", message => {
 
     //Change prefix
     else if (command[0] == "prefix") {
-        prefix = command[2];
+        prefix = command[1];
+        client.user.setActivity("Type "+prefix+"help to get bot functions");
         message.channel.send("Predix has been changed to '"+prefix+"'");
     }
 
     //Lists set announcements
     else if (command[0] == "list") {
         if(announceList.length == 0) {
-            message.channel.send("There are no set announcements!")
+            message.channel.send("There are no set announcements!");
             break testAnnounce;
         }
         let listString = "";
@@ -148,10 +153,20 @@ client.on("message", message => {
     //Shows set time and content of an announcement
     else if (command[0] == "view") {
         if(!announceList.includes(command[1])) {
-            message.channel.send("There is no announcement with that name")
+            message.channel.send("There is no announcement with that name");
         } else {
             let index = announceList.indexOf(command[1]);
             message.channel.send("Type: " + timeList[index][0] + "\nTime: " + timeList[index][1] + ":" + timeList[index][2] + ":" + timeList[index][3] + "\nContent: " + contentList[index]);
+        }
+    }
+
+    //Deletes an announcement
+    else if (command[0] == "del") {
+        if(!announceList.includes(command[1])) {
+            message.channel.send("There is no announcement with that name");
+        } else {
+            delAnnounce(announceList.indexOf(command[1]));
+            message.channel.send("Announcement "+command[1]+" has been deleted");
         }
     }
 
@@ -184,25 +199,31 @@ client.on("message", message => {
         } else if (command[1] == "set") {
             message.channel.send("Sets the announcements channel");
         } else if (command[1] == "date") {
-            message.channel.send("Sends the current date");
+            message.channel.send("Sends the current date and time relative to the bot (no timezone support yet)");
         } else if (command[1] == "ann") {
             if (command[2] == "once") {
                 message.channel.send("Sets an announcement that only runs once to the announcements channel at a certain time\n"+prefix+"ann <announcement_name> once <hour(24)> <minute> <second> <multi-word_message>\ne.g. "+prefix+"ann firstAnnouncement once 18 22 00 hello everyone\nThis will print an announcement that says 'hello everyone' at the next 18:22:00");
             } else if (command[2] == "daily") {
                 message.channel.send("Sets a daily announcement to the announcements channel at a certain time\n"+prefix+"ann <announcement_name> once <hour(24)> <minute> <second> <multi-word_message>\ne.g. "+prefix+"ann firstAnnouncement once 18 22 00 hello everyone\nThis will print an announcement that says 'hello everyone' every day at 18:22:00");
             } else if (command[2] == "weekly") {
-                message.channel.send("Sets a weekly announcement to the announcements channel at the set time\n"+prefix+"ann <announcement_name> <daynumber (Monday 1, Tuesday 2, ... Sunday 7)> <hour(24)> <minute> <second> <multi-word_message>\ne.g. "+prefix+"announce name 6 18 22 00 hello everyone\nThis will print an announcement that says 'hello everyone' every Saturday set at 18 22 00");
-            } else if (command[2] == "specific_once") {
-                message.channel.send("Sets an announcement that only runs once at a certain day and time of a year, either once of ")
+                message.channel.send("Sets a weekly announcement to the announcements channel at the set time\n"+prefix+"ann <announcement_name> <daynumber (Monday 1, Tuesday 2, ... Sunday 7)> <hour(24)> <minute> <second> <multi-word_message>\ne.g. "+prefix+"announce firstAnnouncement 6 18 22 00 hello everyone\nThis will print an announcement that says 'hello everyone' every Saturday set at 18:22:00");
+            //} else if (command[2] == "specific_once") {
+                //message.channel.send("Sets an announcement that only runs once at a certain day and time of a year, either once of ");
             } else {
                 message.channel.send("Specify repeat type, once, daily, weekly? e.g. "+prefix+"help ann <repeat_type>");
             }
         } else if (command[1] == "prefix") {
             message.channel.send("Changes prefix\n"+prefix+"prefix <new_prefix>\ne.g. "+prefix+"prefix !");
         } else if (command[1] == "list") {
-            message.channel.send("Lists all set announcements");
+            message.channel.send("Lists all names of set announcements");
+        } else if (command[1] == "view") {
+            message.channel.send("Shows the repeat type, set time, and content of a specific announcement\n"+prefix+"view <announcement_name>\ne.g."+prefix+"view firstAnnouncement\n This will print the repeat type, set time, and content, respectively");
+        } else if (command[1] == "del") {
+            message.channel.send("Deletes a specified announcement\n"+prefix+"del <announcement_name>\ne.g."+prefix+"del firstAnnouncement\n This will delete 'firstAnnouncement' and print a confirmation message");
+        } else if (command[1] == "about") {
+            message.channel.send("Shows extra information about the bot");
         } else {
-            message.channel.send("There is no info on that command. It probably doesn't exist.");
+            message.channel.send("There is no info on that command, it probably doesn't exist");
         }
     }
 });

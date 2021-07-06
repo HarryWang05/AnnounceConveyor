@@ -2,10 +2,14 @@ Changelog
 
 All dates are in YYYY-MM-DD format.
 
+Version 1
+
 [1.0] - 2021-06-27
 - Used code from JAMHacks project https://github.com/feng-zhang2495/JamHacks-V-
 - Added basic commands
 - Added capability for multiple announcements
+
+Version 2
 
 [2.0] - 2021-07-02
 - Added ability to view repeat type, set time, and content of any set announcement
@@ -22,3 +26,11 @@ All dates are in YYYY-MM-DD format.
 
 [2.3] - 2021-07-05
 - Added Changelog.txt
+
+Version 3
+
+[3.0] - 2021-07-06
+- Added command to delete announcements
+- Fixed bug in which you couldn't change prefix
+- Fixed bug in which program would still try to create announcement when formatted incorrectly
+- Patched up grammar in all outputs
