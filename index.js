@@ -1,6 +1,7 @@
 const Discord = require("discord.js");
 const cron = require("cron");
-//const moment = require('moment-timezone');
+const moment = require("moment-timezone");
+const fs = require("fs");
 const client = new Discord.Client();
 
 //.json with token for discord bot
@@ -171,9 +172,14 @@ client.on("message", message => {
     }
 
     //Shows supported timezones
-    //else if (command[0] == "tz") {
-        //message.channel.send(moment.tz.countries());
-    //}
+    else if (command[0] == "timezones") {
+        message.channel.send("List of timezones: ", {files: ["timezones.txt"]});
+    }
+
+    //Shows countries with supported timezones
+    else if (command[0] == "countries") {
+        message.channel.send("List of country codes: ", {files: ["countries.txt"]});
+    }
 
     //About
     else if (command[0] == "about") {

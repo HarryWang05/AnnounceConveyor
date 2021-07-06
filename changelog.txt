@@ -34,3 +34,8 @@ Version 3
 - Fixed bug in which you couldn't change prefix
 - Fixed bug in which program would still try to create announcement when formatted incorrectly
 - Patched up grammar in all outputs
+
+Version 4
+
+[4.0] - 2021-07-06
+- Added commands to send a txt file of list of avalible timezones or country codes
