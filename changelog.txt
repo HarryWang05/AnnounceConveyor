@@ -1,0 +1,24 @@
+Changelog
+
+All dates are in YYYY-MM-DD format.
+
+[1.0] - 2021-06-27
+- Used code from JAMHacks project https://github.com/feng-zhang2495/JamHacks-V-
+- Added basic commands
+- Added capability for multiple announcements
+
+[2.0] - 2021-07-02
+- Added ability to view repeat type, set time, and content of any set announcement
+- Renamed some variables for consistant names
+- Fixed spelling mistakes in 'help' command
+- Added debugging code
+
+[2.1] - 2021-07-02
+- Fixed a bug in which array holding set time information was not removed when announcement type was 'once'
+
+[2.2] - 2021-07-05
+- Removed unused 'fs' library
+- Removed some debugging code for better finished product
+
+[2.3] - 2021-07-05
+- Added Changelog.txt

@@ -155,6 +155,11 @@ client.on("message", message => {
         }
     }
 
+    //Shows supported timezones
+    //else if (command[0] == "tz") {
+        //message.channel.send(moment.tz.countries());
+    //}
+
     //About
     else if (command[0] == "about") {
         message.channel.send({
@@ -182,15 +187,15 @@ client.on("message", message => {
             message.channel.send("Sends the current date");
         } else if (command[1] == "ann") {
             if (command[2] == "once") {
-                message.channel.send("Sets an announcement that only runs once to the announcements channel at a certain time\n"+prefix+"ann <announcement_name> once <hour(24)> <minuite> <second> <multi-word_message>\ne.g. "+prefix+"ann firstAnnouncement once 18 22 00 hello everyone\nThis will print an announcement that says 'hello everyone' at the next 18:22:00");
+                message.channel.send("Sets an announcement that only runs once to the announcements channel at a certain time\n"+prefix+"ann <announcement_name> once <hour(24)> <minute> <second> <multi-word_message>\ne.g. "+prefix+"ann firstAnnouncement once 18 22 00 hello everyone\nThis will print an announcement that says 'hello everyone' at the next 18:22:00");
             } else if (command[2] == "daily") {
-                message.channel.send("Sets a daily announcement to the announcements channel at a certain time\n"+prefix+"ann <announcement_name> once <hour(24)> <minuite> <second> <multi-word_message>\ne.g. "+prefix+"ann firstAnnouncement once 18 22 00 hello everyone\nThis will print an announcement that says 'hello everyone' every day at 18:22:00");
+                message.channel.send("Sets a daily announcement to the announcements channel at a certain time\n"+prefix+"ann <announcement_name> once <hour(24)> <minute> <second> <multi-word_message>\ne.g. "+prefix+"ann firstAnnouncement once 18 22 00 hello everyone\nThis will print an announcement that says 'hello everyone' every day at 18:22:00");
             } else if (command[2] == "weekly") {
-                message.channel.send("Sets a weekly announcement to the announcements channel at the set time e.g. "+prefix+"ann announceName daynumber (Monday 1, Tuesday 2, ... Sunday 7) hour minuite second message, EX. "+prefix+"announce name 6 18 22 00 hello\nThis will print an announcement every Saturday set at 18 22 00 that says hello");
+                message.channel.send("Sets a weekly announcement to the announcements channel at the set time\n"+prefix+"ann <announcement_name> <daynumber (Monday 1, Tuesday 2, ... Sunday 7)> <hour(24)> <minute> <second> <multi-word_message>\ne.g. "+prefix+"announce name 6 18 22 00 hello everyone\nThis will print an announcement that says 'hello everyone' every Saturday set at 18 22 00");
             } else if (command[2] == "specific_once") {
                 message.channel.send("Sets an announcement that only runs once at a certain day and time of a year, either once of ")
             } else {
-                message.channel.send("Specify repeat type, once, daily, weekly? e.g. help ann <repeat_type>");
+                message.channel.send("Specify repeat type, once, daily, weekly? e.g. "+prefix+"help ann <repeat_type>");
             }
         } else if (command[1] == "prefix") {
             message.channel.send("Changes prefix\n"+prefix+"prefix <new_prefix>\ne.g. "+prefix+"prefix !");
