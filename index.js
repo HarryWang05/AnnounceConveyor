@@ -1,7 +1,6 @@
 const Discord = require("discord.js");
 const cron = require("cron");
 const moment = require("moment-timezone");
-const fs = require("fs");
 const client = new Discord.Client();
 
 //.json with token for discord bot
@@ -55,9 +54,29 @@ function delAnnounce(passIndex) {
     timeList.splice(passIndex);
 }
 
+function setAnnounce(passCommand) {
+    let setName = passCommand[1];
+    let repeatType = passCommand[2];
+    let dayOfWeek = "*";
+    if (!(passCommand[2] == "once" || passCommand[2] == "daily")) {
+        dayOfWeek = passCommand[2];
+    }
+    let confirmMessage = "Announcement '"+setName+"' set at " + passCommand[3] + ":" + passCommand[4] + ":" + passCommand[5];
+    let passTime = passCommand[5] + " " + passCommand[4] + " " + passCommand[3] + " * * " + dayOfWeek;
+    allAnnounces.newCron(passTime,setName,repeatType);
+    timeList.push([passCommand[2],passCommand[5],passCommand[4],passCommand[3]]);
+    for(let i = 0; i < 6; ++i) {
+        passCommand.shift();
+    }
+    let stringCommand = passCommand.join();
+    contentList.push(stringCommand);
+    announceList.push(setName);
+    allAnnounces.returnAll[announceList.length-1].start();
+    return confirmMessage;
+}
+
 let allAnnounces = new setAnnounces();
 var announceChannel;
-var dayOfWeek;
 var prefix = "?";
 const announceList = [];
 const contentList = [];
@@ -65,6 +84,7 @@ const timeList = [];
 
 client.on("message", message => {
 
+    //For debugging
     if(message.content == "end") {
         console.log(nicernice);
     }
@@ -84,37 +104,26 @@ client.on("message", message => {
 
     //ANNOUNCE
     testAnnounce: if (command[0] == "ann") {
-        if (announceChannel == undefined) {
-            message.channel.send("You must specify an announcement channel");
-            break testAnnounce;
-        }
-        const announceName = command[1];
-        const repeatType = command[2];
+        let errMessage = "";
+        let announceName = command[1];
         const commander = command.map(x => x);
-
-        if(announceList.includes(announceName)) {
-            message.channel.send("Announcement name is already taken!");
-            break testAnnounce;
+        if (announceChannel == undefined) {
+            errMessage += "You must specify an announcement channel\n";
         }
-        try {
-            dayOfWeek = "*";
-            if (!(commander[2] == "once" || commander[2] == "daily")) {
-                dayOfWeek = commander[2];
+        if (announceList.includes(announceName)) {
+            errMessage += "Announcement name is already taken\n";
+        }
+        if (command[6] == undefined) {
+            errMessage += "An announcement must have content\n";
+        }
+        if (errMessage != "") {
+            message.channel.send("SendErr: "+errMessage);
+        } else {
+            try {
+                message.channel.send(setAnnounce(commander));
+            } catch {
+                message.channel.send("Something went wrong, this might be because you formatted the 'ann' command incorrectly\nSee "+prefix+"help ann <repeat_type> for correct formatting");
             }
-            let confirmMessage = "Announcement '"+announceName+"' set at " + commander[3] + ":" + commander[4] + ":" + commander[5];
-            let passTime = commander[5] + " " + commander[4] + " " + commander[3] + " * * " + dayOfWeek;
-            allAnnounces.newCron(passTime,announceName,repeatType);
-            timeList.push([commander[2],commander[5],commander[4],commander[3]]);
-            for(let i = 0; i < 6; ++i) {
-                commander.shift();
-            }
-            let stringCommander = commander.join();
-            contentList.push(stringCommander);
-            announceList.push(announceName);
-            allAnnounces.returnAll[announceList.length-1].start();
-            message.channel.send(confirmMessage);
-        } catch {
-            message.channel.send("Something went wrong, this might be because you formatted the 'ann' command incorrectly");
         }
     }
 
@@ -167,7 +176,7 @@ client.on("message", message => {
             message.channel.send("There is no announcement with that name");
         } else {
             delAnnounce(announceList.indexOf(command[1]));
-            message.channel.send("Announcement "+command[1]+" has been deleted");
+            message.channel.send("Announcement '"+command[1]+"' has been deleted");
         }
     }
 
