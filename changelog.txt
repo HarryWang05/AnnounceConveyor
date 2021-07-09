@@ -46,3 +46,6 @@ Version 4
 - Implemented function to set announcements for improved reusability
 - Changed some output text for more clarity
 - Revised changelog to correct grammar and spelling mistakes
+
+[4.2] - 2021-07-09
+- Removed debugging code

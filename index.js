@@ -84,11 +84,6 @@ const timeList = [];
 
 client.on("message", message => {
 
-    //For debugging
-    if(message.content == "end") {
-        console.log(nicernice);
-    }
-
     //Message to console
     console.log(message.content);
 
@@ -189,6 +184,11 @@ client.on("message", message => {
     else if (command[0] == "countries") {
         message.channel.send("List of country codes: ", {files: ["countries.txt"]});
     }
+
+    //Sets timezone
+    //else if (command[0] == "set_tz") {
+        //message.channel.send("");
+    //}
 
     //About
     else if (command[0] == "about") {
