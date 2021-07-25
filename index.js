@@ -61,7 +61,14 @@ function setAnnounce(passCommand) {
         dayOfWeek = passCommand[2];
     }
     let confirmMessage = "Announcement '"+setName+"' set at " + passCommand[3] + ":" + passCommand[4] + ":" + passCommand[5];
-    let TzShift = parseInt(passCommand[3])+userTz;
+    let TzShift = parseInt(passCommand[3]);
+    if (TzShift+userTz < 0) {
+        TzShift += userTz+24;
+    } else if (TzShift+userTz > 23) {
+        TzShift += userTz-24;
+    } else {
+        TzShift += userTz;
+    }
     let passTime = passCommand[5] + " " + passCommand[4] + " " + TzShift + " * * " + dayOfWeek;
     allAnnounces.newCron(passTime,setName,repeatType);
     timeList.push([passCommand[2],passCommand[5],passCommand[4],passCommand[3]]);
@@ -178,8 +185,12 @@ client.on("message", message => {
 
     //Sets timezone (number of hours ahead or behind of UTC)
     else if (command[0] == "tz") {
-        userTz = parseInt(command[1]);
-        message.channel.send("Timezone set to "+userTz+" ahead of UTC");
+        if (parseInt(command[1]) > 12 || parseInt(command[1]) < -12) {
+            message.channel.send("Time shift cannot be greater than 12 or less than -12");
+        } else {
+            userTz = parseInt(command[1]);
+            message.channel.send("Timezone set to "+userTz+" ahead of UTC");
+        }
     }
 
     //About

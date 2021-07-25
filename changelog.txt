@@ -59,3 +59,7 @@ Version 4
 
 [4.5] - 2021-7-24
 - Added tz command which can set timezones to some extent by shifting announcements by a specified amount of hours ahead or behind of UTC
+
+[4.6] - 2021-7-25
+- Added caps to time shift (12 and -12)
+- Fixed bug in which time shift could make times less than 0 and greater than 23
