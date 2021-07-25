@@ -49,3 +49,10 @@ Version 4
 
 [4.2] - 2021-07-09
 - Removed debugging code
+
+[4.3] - 2021-07-09
+- Added command to set timezone
+- Added function to get date
+
+[4.4] - 2021-7-24
+- Fixed bug in which time would be displayed as SS-MM-HH when an announcement is viewed using 'view' command

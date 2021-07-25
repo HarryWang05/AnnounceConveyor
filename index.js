@@ -1,6 +1,5 @@
 const Discord = require("discord.js");
 const cron = require("cron");
-const moment = require("moment-timezone");
 const client = new Discord.Client();
 
 //.json with token for discord bot
@@ -78,6 +77,7 @@ function setAnnounce(passCommand) {
 let allAnnounces = new setAnnounces();
 var announceChannel;
 var prefix = "?";
+var userTz;
 const announceList = [];
 const contentList = [];
 const timeList = [];
@@ -128,7 +128,7 @@ client.on("message", message => {
         announceChannel.send("Announcements Channel set!");
 	}
 
-    //Sends date
+    //Sends UTC date
     else if (command[0] == "date") {
         message.channel.send(Date());
     }
@@ -161,7 +161,7 @@ client.on("message", message => {
             message.channel.send("There is no announcement with that name");
         } else {
             let index = announceList.indexOf(command[1]);
-            message.channel.send("Type: " + timeList[index][0] + "\nTime: " + timeList[index][1] + ":" + timeList[index][2] + ":" + timeList[index][3] + "\nContent: " + contentList[index]);
+            message.channel.send("Type: " + timeList[index][0] + "\nTime: " + timeList[index][3] + ":" + timeList[index][2] + ":" + timeList[index][1] + "\nContent: " + contentList[index]);
         }
     }
 
@@ -185,10 +185,11 @@ client.on("message", message => {
         message.channel.send("List of country codes: ", {files: ["countries.txt"]});
     }
 
-    //Sets timezone
-    //else if (command[0] == "set_tz") {
-        //message.channel.send("");
-    //}
+    //Sets timezone (number of hours ahead or behind of UTC)
+    /*else if (command[0] == "tz") {
+        userTz = parseInt(command[1]);
+        message.channel.send("Timezone set to "+userTz+" relative to UTC");
+    }*/
 
     //About
     else if (command[0] == "about") {
@@ -214,7 +215,7 @@ client.on("message", message => {
         } else if (command[1] == "set") {
             message.channel.send("Sets the announcements channel");
         } else if (command[1] == "date") {
-            message.channel.send("Sends the current date and time relative to the bot (no timezone support yet)");
+            message.channel.send("Sends the current UTC date and time (or time relative to the bot if self-hosted)");
         } else if (command[1] == "ann") {
             if (command[2] == "once") {
                 message.channel.send("Sets an announcement that only runs once to the announcements channel at a certain time\n"+prefix+"ann <announcement_name> once <hour(24)> <minute> <second> <multi-word_message>\ne.g. "+prefix+"ann firstAnnouncement once 18 22 00 hello everyone\nThis will print an announcement that says 'hello everyone' at the next 18:22:00");
