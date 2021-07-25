@@ -61,7 +61,8 @@ function setAnnounce(passCommand) {
         dayOfWeek = passCommand[2];
     }
     let confirmMessage = "Announcement '"+setName+"' set at " + passCommand[3] + ":" + passCommand[4] + ":" + passCommand[5];
-    let passTime = passCommand[5] + " " + passCommand[4] + " " + passCommand[3] + " * * " + dayOfWeek;
+    let TzShift = parseInt(passCommand[3])+userTz;
+    let passTime = passCommand[5] + " " + passCommand[4] + " " + TzShift + " * * " + dayOfWeek;
     allAnnounces.newCron(passTime,setName,repeatType);
     timeList.push([passCommand[2],passCommand[5],passCommand[4],passCommand[3]]);
     for(let i = 0; i < 6; ++i) {
@@ -175,21 +176,11 @@ client.on("message", message => {
         }
     }
 
-    //Shows supported timezones
-    else if (command[0] == "timezones") {
-        message.channel.send("List of timezones: ", {files: ["timezones.txt"]});
-    }
-
-    //Shows countries with supported timezones
-    else if (command[0] == "countries") {
-        message.channel.send("List of country codes: ", {files: ["countries.txt"]});
-    }
-
     //Sets timezone (number of hours ahead or behind of UTC)
-    /*else if (command[0] == "tz") {
+    else if (command[0] == "tz") {
         userTz = parseInt(command[1]);
-        message.channel.send("Timezone set to "+userTz+" relative to UTC");
-    }*/
+        message.channel.send("Timezone set to "+userTz+" ahead of UTC");
+    }
 
     //About
     else if (command[0] == "about") {
@@ -236,6 +227,8 @@ client.on("message", message => {
             message.channel.send("Shows the repeat type, set time, and content of a specific announcement\n"+prefix+"view <announcement_name>\ne.g."+prefix+"view firstAnnouncement\n This will print the repeat type, set time, and content, respectively");
         } else if (command[1] == "del") {
             message.channel.send("Deletes a specified announcement\n"+prefix+"del <announcement_name>\ne.g."+prefix+"del firstAnnouncement\n This will delete 'firstAnnouncement' and print a confirmation message");
+        } else if (command[1] == "tz") {
+            message.channel.send("Sets announcements a certain number of hours ahead or behind UTC\n"+prefix+"tz <time_shift(+/- in hours)>\ne.g."+prefix+"tz -1\n This will make all announcements be set at 1 hour before UTC. Note: Previously set announcements will not be affected");
         } else if (command[1] == "about") {
             message.channel.send("Shows extra information about the bot");
         } else {

@@ -56,3 +56,6 @@ Version 4
 
 [4.4] - 2021-7-24
 - Fixed bug in which time would be displayed as SS-MM-HH when an announcement is viewed using 'view' command
+
+[4.5] - 2021-7-24
+- Added tz command which can set timezones to some extent by shifting announcements by a specified amount of hours ahead or behind of UTC
